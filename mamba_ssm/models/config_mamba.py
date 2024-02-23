@@ -1,9 +1,9 @@
 from dataclasses import dataclass, field
 from typing import Union
-
+from transformers import PretrainedConfig
 
 @dataclass
-class MambaConfig:
+class MambaConfig(PretrainedConfig):
 
     d_model: int = 2560
     n_layer: int = 64
