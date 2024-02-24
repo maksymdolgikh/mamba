@@ -106,17 +106,17 @@ class MambaWrapper(nn.Module):
             raise NotImplementedError(f"`{bidirectional_strategy}` strategy for bi-directionality is not implemented!")
         self.bidirectional = bidirectional
         self.bidirectional_strategy = bidirectional_strategy
-        self.mamba_fwd = Mamba(
+        self.mamba = Mamba(
             d_model=d_model,
             **mamba_kwargs
         )
-        if bidirectional:
-            self.mamba_rev = Mamba(
-                d_model=d_model,
-                **mamba_kwargs
-            )
-        else:
-            self.mamba_rev = None
+        # if bidirectional:
+        #     self.mamba_rev = Mamba(
+        #         d_model=d_model,
+        #         **mamba_kwargs
+        #     )
+        # else:
+        #     self.mamba_rev = None
 
     def forward(self, hidden_states, inference_params=None):
         """Bidirectional-enabled forward pass
@@ -124,9 +124,9 @@ class MambaWrapper(nn.Module):
         hidden_states: (B, L, D)
         Returns: same shape as hidden_states
         """
-        out = self.mamba_fwd(hidden_states, inference_params=inference_params)
+        out = self.mamba(hidden_states, inference_params=inference_params)
         if self.bidirectional:
-            out_rev = self.mamba_rev(
+            out_rev = self.mamba(
                 hidden_states.flip(dims=(1,)),  # Flip along the sequence length dimension
                 inference_params=inference_params
             ).flip(dims=(1,))  # Flip back for combining with forward hidden states
